@@ -84,11 +84,11 @@ class Tracker(Node):
 
         # control gains Aiming to work fine for waypoints at max pi/3 relative orientation to the boat 
         self.Kx = 75.
-        self.Kw = 0.7 #0.5 for heavy turblences
+        self.Kw = 0.3 #0.5 for heavy turblences
         self.Kxi = 10.0
         self.Kwi = 0.000001 # 0.00005 for heavy turbulences 
         self.Kxd = 0.0 
-        self.Kwd = 0.1 # 0.5 for heavy turbulences
+        self.Kwd = 0.05 # 0.5 for heavy turbulences
 
         self.iterator_count =1
         self.buoy_pose_sum = Pose()
@@ -112,7 +112,7 @@ class Tracker(Node):
             self.get_logger().info(
                 f'ally not found')
             return
-        
+
         self.allies_pub.publish(msg_pose)
 
 
@@ -200,8 +200,8 @@ class Tracker(Node):
 
         #debug purposes
         self.get_logger().info("distance = %f" % error_distance)
-        #self.get_logger().info("error x = %f" % err.x)
-        #self.get_logger().info("error y = %f" % err.y)
+        self.get_logger().info("error x = %f" % err.x)
+        self.get_logger().info("error y = %f" % err.y)
 
         # calculating buoy pose and attempting to work around noise with mobile average
         new_buoy_pos = self.tf_buffer.lookup_transform(
