@@ -95,18 +95,23 @@ class Tracker(Node):
         self.timer = self.create_timer(0.1, self.publish_poses_and_control_loop)
 
     def publish_allies_poses(self, msg: Int32):
+
         msg_pose = PoseArray()
-        for i in range(msg.data): #passes through all ally boats
-             #self.get_logger().info("looping through ally"), DEBUG PURPOSES
-             pose = Pose() # create a new Pose message
-             ally_pose = self.tf_buffer.lookup_transform(
+        try:
+            for i in range(msg.data): #passes through all ally boats
+                #self.get_logger().info("looping through ally"), DEBUG PURPOSES
+                pose = Pose() # create a new Pose message
+                ally_pose = self.tf_buffer.lookup_transform(
                         'world',
                         f'ally{i}',
                         rclpy.time.Time()).transform.translation
-             
-             pose.position.x, pose.position.y = ally_pose.x, ally_pose.y
-             msg_pose.poses.append(pose)
-             #self.get_logger().info("ally x in world = %f" %ally_pose.x), DEBUG PURPOSES
+                pose.position.x, pose.position.y = ally_pose.x, ally_pose.y
+                msg_pose.poses.append(pose)
+                #self.get_logger().info("ally x in world = %f" %ally_pose.x), DEBUG PURPOSES
+        except TransformException:
+            self.get_logger().info(
+                f'ally not found')
+            return
         
         self.allies_pub.publish(msg_pose)
 
